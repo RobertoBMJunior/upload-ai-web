@@ -7,16 +7,40 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { Slider } from "./components/ui/slider";
 import { VideoInputForm } from "./components/video-input-form";
 import { PromptSelect } from "./components/prompt-select";
-import { useState } from "react";
+import { FormEvent, useState } from "react";
+import {api} from './lib/axios'
 
 export function App() {
   const [temperature, setTemperature] = useState(0.5)
   const [videoId, setVideoId] = useState<string | null>(null)
+  const [prompt, setPrompt] = useState<string> ('')
+  const [responseIA, setResponseIA] = useState<string>('')
+  const [status,setStatus] = useState<string>('Executar')
+
 
   function handlePromptSelected(template: string) {
-    console.log(template)
+    setPrompt(template)
   }
 
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    setStatus('Executando...')
+
+    const response = await api.post('/ai/complete', {
+      videoId,
+      temperature,
+      prompt,
+    })
+
+    console.log(prompt.length)
+    
+    setStatus('Executar')
+    setResponseIA(response.data.choices[0].message.content)
+  }
+
+  function handleChange (event: any  ) {
+    setPrompt(event.target.value)
+  }
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -27,10 +51,13 @@ export function App() {
 
           <Separator orientation="vertical" className="h-6"/>
 
-          <Button variant={"secondary"}>
-            <Github className="w-4 h-4 mr-2"/>
-            Github
-          </Button>
+          <a href="https://github.com/RobertoBMJunior/upload-ai-web" target="_blank">
+            <Button variant={"secondary"}>
+              <Github className="w-4 h-4 mr-2"/>
+              Github
+              
+            </Button>
+          </a>
         </div>
       </div>
 
@@ -38,20 +65,36 @@ export function App() {
         <div className="flex flex-col flex-1 gap-4">
           <div className="grid grid-rows-2 gap-4 flex-1">
             <Textarea 
-              placeholder="Inclua o prompt para a IA..." 
+              placeholder="Obtenha sugestões de títulos e descrições para o seu vídeo do YouTube. Carregue o seu vídeo e selecione a opção desejada no prompt." 
               className="resize-none p-4 leading-relaxed"
+              value={prompt}
+              onChange={handleChange}
             />
 
             <Textarea 
               placeholder="Resultado gerado pela IA" 
               readOnly 
               className="resize-none p-4 leading-relaxed "
+              value={responseIA}
             />
           </div>
 
 
           <p className="text-sm text-muted-foreground">
-            Lembre-se: Você pode utilizar a variável <code className="text-violet-400"> {'{trancription}'}</code>  no seu prompt para adicionar o conteúdo da transcrição do vídeo selecionado. 
+            PS: O idioma do vídeo carregado deve ser em português e no formato mp4. 
+
+             Esta ferramenta usa apenas o audio do vídeo caregado, ou seja, o vídeo mp4 vai ser convertido em um arquivo de audio mp3.
+
+             No prompt, a variável <code className="text-violet-400"> {'{trancription}'}</code> é substituída pela transcrição do audio mp3.
+        
+             É pela análise desta transcrição que a inteligência artificial vai te sugerir opções de descrição e de títulos para o seu vídeo.
+            <br />
+            O select do prompt, no menu lateral direito, oferece duas sugestões de coisas que você pode fazer com esta IA. Também é possível editar o prompt de comando e pedir pra inteligência artificial fazer outras coisas com a transcrição do vídeo.
+            <br />
+            Se quiser carregar outro vídeo, recarregue a página!
+            <br />
+            
+
           </p>
 
         </div>
@@ -60,7 +103,7 @@ export function App() {
 
           <Separator/>
 
-          <form className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">
               <Label>Prompt</Label>
               <PromptSelect onPromptSelected={handlePromptSelected}/>
@@ -96,6 +139,7 @@ export function App() {
                 step={.1} 
                 value={[temperature]}
                 onValueChange={value => setTemperature(value[0])}
+                className="cursor-pointer"
               />
         
 
@@ -106,9 +150,15 @@ export function App() {
 
             <Separator/>
 
-            <Button className="w-full" type="submit">
-              Executar
-              <Wand2 className="h-4 w-4 ml-2"/>
+            <Button disabled={(status !== 'Executar') || (prompt.length < 10) || (videoId === null)} className="w-full" type="submit">
+              {status === 'Executar' ?
+                <>
+                  Executar
+                <Wand2 className="h-4 w-4 ml-2"/>
+                </> :
+                <>Executando...</>
+              }
+          
             </Button>
 
           </form>

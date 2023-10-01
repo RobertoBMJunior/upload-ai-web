@@ -21,18 +21,18 @@ export function PromptSelect({onPromptSelected}: PromptSelectProps) {
         })
     },[])
 
-    function handlePromtSelected(promptId: string) {
-        const selectedPromt = prompts?.find(prompt => prompt.id === promptId)
+    function handlePromptSelected(promptId: string) {
+        const selectedPrompt = prompts?.find(prompt => prompt.id === promptId)
     
-        if(!selectedPromt) {
+        if(!selectedPrompt) {
             return
         }
 
-        onPromptSelected(selectedPromt.template)
+        onPromptSelected(selectedPrompt.template)
     }
 
     return(
-        <Select onValueChange={handlePromtSelected}>
+        <Select onValueChange={handlePromptSelected}>
             <SelectTrigger>
                 <SelectValue placeholder="Selecione um prompt..."/>
             </SelectTrigger>

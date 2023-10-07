@@ -89,7 +89,7 @@ export function App() {
         
              É pela análise desta transcrição que a inteligência artificial vai te sugerir opções de descrição e de títulos para o seu vídeo.
             <br />
-            O select do prompt, no menu lateral direito, oferece duas sugestões de coisas que você pode fazer com esta IA. Também é possível editar o prompt de comando e pedir pra inteligência artificial fazer outras coisas com a transcrição do vídeo.
+            O select do prompt, no menu lateral direito, oferece duas sugestões do que você pode fazer com esta IA. Também é possível editar o prompt de comando e pedir pra inteligência artificial fazer outras coisas com a transcrição do vídeo.
             <br />
             Se quiser carregar outro vídeo, recarregue a página!
             <br />
